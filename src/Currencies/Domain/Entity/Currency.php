@@ -40,7 +40,7 @@ class Currency
     /**
      * @return int
      */
-    public function getVNom(): float|int
+    public function getVNom(): int
     {
         return $this->vNom;
     }
@@ -48,7 +48,7 @@ class Currency
     /**
      * @param int $vNom
      */
-    public function setVNom(float|int $vNom): void
+    public function setVNom(int $vNom): void
     {
         $this->vNom = $vNom;
     }
@@ -56,7 +56,7 @@ class Currency
     /**
      * @return float
      */
-    public function getVCurs(): float|string
+    public function getVCurs(): float
     {
         return $this->vCurs;
     }
@@ -64,7 +64,7 @@ class Currency
     /**
      * @param float $vCurs
      */
-    public function setVCurs(float|string $vCurs): void
+    public function setVCurs(float $vCurs): void
     {
         $this->vCurs = $vCurs;
     }
