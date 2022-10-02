@@ -43,14 +43,22 @@ final class ParseCurrencies extends Command
             $currencyList = $this->currencyParser->parse($date);
 
             foreach ($currencyList as $currencyItem) {
-                $currency = $this->currencyFactory->create(
-                    $currencyItem->getVchCode(),
-                    $currencyItem->getVNom(),
-                    $currencyItem->getVCurs(),
-                    $currencyItem->getVCode(),
-                    $currencyItem->getCreatedDate()
-                );
-                $this->currencyRepository->add($currency);
+                $currency = $this->currencyRepository->findByVchCodeAndCreatedDate($currencyItem->getVchCode(), $currencyItem->getCreatedDate());
+
+                if (!$currency) {
+                    $currency = $this->currencyFactory->create(
+                        $currencyItem->getVchCode(),
+                        $currencyItem->getVNom(),
+                        $currencyItem->getVCurs(),
+                        $currencyItem->getVCode(),
+                        $currencyItem->getCreatedDate()
+                    );
+                } else {
+                    $currency->setVCurs($currencyItem->getVCurs());
+                    $currency->setVNom($currencyItem->getVNom());
+                }
+
+                $this->currencyRepository->save($currency);
             }
 
             $this->logger->debug('End parsing data. Count: '.count($currencyList));

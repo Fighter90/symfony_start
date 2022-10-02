@@ -16,7 +16,7 @@ class CurrencyRepository extends ServiceEntityRepository implements CurrencyRepo
         parent::__construct($registry, Currency::class);
     }
 
-    public function add(Currency $currency): void
+    public function save(Currency $currency): void
     {
         $this->_em->persist($currency);
         $this->_em->flush();

@@ -26,7 +26,7 @@ class CreateCurrencyCommandHandler implements CommandHandlerInterface
                 $createCurrencyCommand->vCode,
                 $createCurrencyCommand->createdDate
         );
-        $this->currencyRepository->add($currency);
+        $this->currencyRepository->save($currency);
 
         return $currency->getId();
     }

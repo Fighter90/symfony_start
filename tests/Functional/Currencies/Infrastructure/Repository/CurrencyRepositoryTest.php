@@ -43,7 +43,7 @@ class CurrencyRepositoryTest extends WebTestCase
         );
 
         // act
-        $this->repository->add($currency);
+        $this->repository->save($currency);
 
         // assert
         $existingCurrency = $this->repository->findByVchCodeAndCreatedDate(

@@ -8,7 +8,7 @@ use App\Currencies\Domain\Entity\Currency;
 
 interface CurrencyRepositoryInterface
 {
-    public function add(Currency $currency): void;
+    public function save(Currency $currency): void;
 
     public function findByVchCodeAndCreatedDate(string $vchCode, \DateTime $createdDate): ?Currency;
 
