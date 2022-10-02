@@ -1,0 +1,17 @@
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="https://doctrine-project.org/schemas/orm/doctrine-mapping
+                          https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="App\Currencies\Domain\Entity\Currency" table="currencies_currency">
+        <id name="id" type="bigint" column="id">
+            <generator strategy="IDENTITY"/>
+        </id>
+        <field name="vchCode" type="string" column="vchCode" length="3" nullable="false"/>
+        <field name="vCurs" type="decimal" scale="4" precision="19" column="vCurs" nullable="false"/>
+        <field name="vNom" type="integer" column="vNom" nullable="false"/>
+        <field name="vCode" type="integer" column="vCode" nullable="false"/>
+        <field name="createdDate" type="datetime" column="createdDate" nullable="false"/>
+    </entity>
+
+</doctrine-mapping>

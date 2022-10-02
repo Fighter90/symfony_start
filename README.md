@@ -38,10 +38,25 @@
 - [X] [Symfony Messenger](https://symfony.com/doc/current/messenger.html)
 
 ### Auth
+
 - [X] [JWT Authentication](https://github.com/lexik/LexikJWTAuthenticationBundle)
 - [X] [JWT Refresh Token](https://github.com/markitosgv/JWTRefreshTokenBundle)
 
 ### Static analysis tool
+
 - [X] [PHP CS Fixer](https://github.com/FriendsOfPHP/PHP-CS-Fixer)
 - [X] [Deptrac](https://qossmic.github.io/deptrac/)
 - [X] [PHPStan](https://github.com/phpstan/phpstan)
+
+### Task
+
+Получение курсов, кроскурсов ЦБ.
+Необходимо написать небольшой REST API сервис как минимум с одним методом, который будет возвращать курсы/кроскурсы валют по данным ЦБ в формате JSON.
+Требования:
+- [X] на входе: дата, код котируемой валюты, код базовой валюты (по-умолчанию RUR)
+- [X] получать курсы с cbr.ru
+- [X] на выходе: значение курса и разница с предыдущим торговым днем
+- [X] кешировать данные cbr.ru
+  Реализация подразумевает не только код, но и окружение, которое можно запустить через docker-compose.
+  Ограничений на использование фреймворков/сторонних пакетов нет, но желательно использовать либо нативный PHP, либо Symfony.
+  Для получения данных ЦБ подойдёт любой способ. Один из самых простых и достоверных - https://www.cbr.ru/DailyInfoWebServ/DailyInfo.asmx?op=GetCursOnDate
