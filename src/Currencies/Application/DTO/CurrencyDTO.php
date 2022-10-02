@@ -9,17 +9,24 @@ use App\Currencies\Domain\Entity\Currency;
 class CurrencyDTO
 {
     public function __construct(
-        public readonly string $vchCode,
-        public readonly int $vNom,
-        public readonly float $vCurs,
-        public readonly int $vCode,
-        public readonly \DateTime $createdDate
+        public readonly ?int $id = null,
+        public readonly ?string $vchCode = null,
+        public readonly ?int $vNom = null,
+        public readonly ?float $vCurs = null,
+        public readonly ?int $vCode = null,
+        public readonly ?\DateTime $createdDate = null
     ) {
+    }
+
+    public static function empty(): self
+    {
+        return new self();
     }
 
     public static function fromEntity(Currency $currency): self
     {
         return new self(
+            $currency->getId(),
             $currency->getVchCode(),
             $currency->getVNom(),
             $currency->getVCurs(),

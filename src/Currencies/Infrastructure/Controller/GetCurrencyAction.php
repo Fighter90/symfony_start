@@ -16,6 +16,10 @@ class GetCurrencyAction
 
     public function __invoke(): JsonResponse
     {
-        return new JsonResponse([]);
+
+
+        return new JsonResponse([
+
+        ]);
     }
 }

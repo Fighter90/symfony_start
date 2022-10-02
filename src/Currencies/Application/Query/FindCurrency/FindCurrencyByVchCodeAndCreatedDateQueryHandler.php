@@ -22,7 +22,7 @@ class FindCurrencyByVchCodeAndCreatedDateQueryHandler implements QueryHandlerInt
         );
 
         if (!$currency) {
-            throw new \Exception('Currency not found');
+            return CurrencyDTO::empty();
         }
 
         return CurrencyDTO::fromEntity($currency);

@@ -2,15 +2,19 @@
 
 namespace App\Currencies\Infrastructure\Console;
 
-use App\Currencies\Domain\Factory\CurrencyFactory;
-use App\Currencies\Infrastructure\Repository\CurrencyRepository;
+use App\Currencies\Application\Command\CreateCurrency\CreateCurrencyCommand;
+use App\Currencies\Application\Command\UpdateCurrency\UpdateCurrencyCommand;
+use App\Currencies\Application\Query\FindCurrency\FindCurrencyByVchCodeAndCreatedDateQuery;
 use App\Currencies\Infrastructure\Service\Interfaces\CurrencyParserInterface;
+use App\Shared\Application\Command\CommandBusInterface;
+use App\Shared\Application\Query\QueryBusInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use App\Currencies\Application\DTO\CurrencyDTO;
 
 #[AsCommand(
     name: 'app:currencies:parse',
@@ -19,10 +23,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 final class ParseCurrencies extends Command
 {
     public function __construct(
-        private readonly CurrencyRepository $currencyRepository,
         private readonly CurrencyParserInterface $currencyParser,
-        private readonly CurrencyFactory $currencyFactory,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
+        private readonly CommandBusInterface $commandBus,
+        private readonly QueryBusInterface $queryBus
     ) {
         parent::__construct();
     }
@@ -43,22 +47,33 @@ final class ParseCurrencies extends Command
             $currencyList = $this->currencyParser->parse($date);
 
             foreach ($currencyList as $currencyItem) {
-                $currency = $this->currencyRepository->findByVchCodeAndCreatedDate($currencyItem->getVchCode(), $currencyItem->getCreatedDate());
+                $query = new FindCurrencyByVchCodeAndCreatedDateQuery(
+                    $currencyItem->getVchCode(),
+                    $currencyItem->getCreatedDate()
+                );
 
-                if (!$currency) {
-                    $currency = $this->currencyFactory->create(
+                /**
+                 * @var CurrencyDTO $currencyDTO
+                 */
+                $currencyDTO = $this->queryBus->execute($query);
+
+                if (!$currencyDTO->id) {
+                    $command = new CreateCurrencyCommand(
                         $currencyItem->getVchCode(),
                         $currencyItem->getVNom(),
                         $currencyItem->getVCurs(),
                         $currencyItem->getVCode(),
                         $currencyItem->getCreatedDate()
                     );
+                    $this->commandBus->execute($command);
                 } else {
-                    $currency->setVCurs($currencyItem->getVCurs());
-                    $currency->setVNom($currencyItem->getVNom());
+                    $command = new UpdateCurrencyCommand(
+                        $currencyDTO->id,
+                        $currencyItem->getVNom(),
+                        $currencyItem->getVCurs(),
+                    );
+                    $this->commandBus->execute($command);
                 }
-
-                $this->currencyRepository->save($currency);
             }
 
             $this->logger->debug('End parsing data. Count: '.count($currencyList));
