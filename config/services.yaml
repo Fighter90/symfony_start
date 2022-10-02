@@ -28,3 +28,7 @@ services:
     App\Users\Infrastructure\Controller\:
         resource: '../src/Users/Infrastructure/Controller/'
         tags: [ 'controller.service_arguments' ]
+
+    App\Currencies\Infrastructure\Controller\:
+        resource: '../src/Currencies/Infrastructure/Controller/'
+        tags: [ 'controller.service_arguments' ]

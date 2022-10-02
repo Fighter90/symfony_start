@@ -12,11 +12,17 @@ parameters:
       collectors:
         - type: directory
           regex: /src/Users/.*
+    - name: Currencies
+        collectors:
+            - type: directory
+              regex: /src/Currencies/.*
     - name: Recipes
       collectors:
         - type: directory
           regex: /src/Recipes/.*
   ruleset:
+    Currencies:
+      - Shared
     Users:
       - Shared
     Recipes:

@@ -7,7 +7,7 @@ namespace App\Currencies\Infrastructure\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/api/currencies/date', methods: ['GET'])]
+#[Route('/api/currency', methods: ['GET'])]
 class GetCurrencyAction
 {
     public function __construct()
