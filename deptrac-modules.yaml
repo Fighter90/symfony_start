@@ -13,9 +13,9 @@ parameters:
         - type: directory
           regex: /src/Users/.*
     - name: Currencies
-        collectors:
-            - type: directory
-              regex: /src/Currencies/.*
+      collectors:
+        - type: directory
+          regex: /src/Currencies/.*
     - name: Recipes
       collectors:
         - type: directory
