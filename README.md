@@ -60,3 +60,18 @@
   Реализация подразумевает не только код, но и окружение, которое можно запустить через docker-compose.
   Ограничений на использование фреймворков/сторонних пакетов нет, но желательно использовать либо нативный PHP, либо Symfony.
   Для получения данных ЦБ подойдёт любой способ. Один из самых простых и достоверных - https://www.cbr.ru/DailyInfoWebServ/DailyInfo.asmx?op=GetCursOnDate
+
+### HOWTO
+CRON
+php bin/console app:currencies:parse [YYYY-mm-dd] - Запуск парсинга курсов валют в БД
+[YYYY-mm-dd] - дата забора данных (опционально)
+
+REST API
+/api/currency/date/{YYYY-mm-dd}/code/{XXX1}/{XXX2}
+{YYYY-mm-dd} - Дата курса валют
+{XXX1} - Курс волюты
+{XXX2} - Курс валюты (базовый)
+
+Пример запуска
+curl -H "Authorization: Bearer {token}" http://localhost:888/api/currency/date/2022-10-01/code/EUR/RUB   
+{token} - JWT Token
