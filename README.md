@@ -77,5 +77,7 @@ REST API
 {XXX2} - Курс валюты (базовый)
 
 Пример запуска
+
 curl -H "Authorization: Bearer {token}" http://localhost:888/api/currency/date/2022-10-01/code/EUR/RUB   
+
 {token} - JWT Token
