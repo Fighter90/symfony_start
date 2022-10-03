@@ -41,10 +41,15 @@ services:
       - db_data:/var/lib/postgresql/data:rw
 
   memcached:
-    image: memcached
     container_name: memcached
+    image: memcached:latest
+    entrypoint:
+      - memcached
+      - -m 64
     ports:
-      - "${MEMCACHED_PORT}:11211"
+      - "${MEMCACHED_PORT}:11211" # This is only needed if you wants to connect from your host to the container
+    expose:
+      - "11211"
 
 volumes:
   db_data:

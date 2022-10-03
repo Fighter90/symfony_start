@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Currencies\Infrastructure\Controller;
 
+use App\Currencies\Application\DTO\CursDTO;
 use App\Currencies\Application\Query\GetCalcCurrency\GetCalcCurrencyQuery;
-use App\Currencies\Infrastructure\DTO\CursDTO;
 use App\Shared\Application\Query\QueryBusInterface;
 use App\Shared\Infrastructure\Cache\CacheInterface;
 use Symfony\Component\Cache\Adapter\MemcachedAdapter;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/api/currency/date/{date}/code/{code1}/{code2}', name: 'currency_calc', requirements: ['date' => "\d{4}-\d{2}-\d{2}", 'code1' => '[A-Za-z]{3}'], defaults: ['code2' => 'RUB'], methods: ['GET'])]
+#[Route('/api/currency/date/{date}/code/{code1}/{code2}', name: 'currency_calc', requirements: ['date' => "\d{4}-\d{2}-\d{2}", 'code1' => '[A-Za-z]{3}', 'code2' => '[A-Za-z]{3}'], defaults: ['code2' => 'RUB'], methods: ['GET'])]
 class GetCurrencyAction
 {
     public function __construct(
@@ -30,9 +30,13 @@ class GetCurrencyAction
             $date2 = (clone $date1)->modify('-1 day');
             $curs2 = $this->getCursArray($date2, $code1, $code2);
 
+            if (empty($curs1)) {
+                throw new \Exception('Incorrect input data. Params: '. $date1->format("Y-m-d"). ', '. $code1. ', '. $code2);
+            }
+
             $diff = null;
 
-            if (!empty($curs1) && !empty($curs2)) {
+            if (!empty($curs2)) {
                 $diff = round(abs($curs1['vCurs'] - $curs2['vCurs']), 4);
             }
 
@@ -73,7 +77,7 @@ class GetCurrencyAction
         );
 
         /**
-         * @var CursDTO $vCurs1
+         * @var CursDTO $vCurs
          */
         $vCurs = $this->queryBus->execute($query);
 
@@ -87,6 +91,10 @@ class GetCurrencyAction
         return $data;
     }
 
+    /**
+     * @param CursDTO $vCurs
+     * @return array
+     */
     private function getDataArray(CursDTO $vCurs): array
     {
         return [

@@ -2,9 +2,9 @@
 
 namespace App\Tests\Functional\Currencies\Application\Query\GetCalcCurrency;
 
+use App\Currencies\Application\DTO\CursDTO;
 use App\Currencies\Application\Query\GetCalcCurrency\GetCalcCurrencyQuery;
 use App\Currencies\Domain\Entity\Currency;
-use App\Currencies\Infrastructure\DTO\CursDTO;
 use App\Shared\Application\Query\QueryBusInterface;
 use App\Tests\Resource\Fixture\CurrencyFixture;
 use Liip\TestFixturesBundle\Services\DatabaseToolCollection;

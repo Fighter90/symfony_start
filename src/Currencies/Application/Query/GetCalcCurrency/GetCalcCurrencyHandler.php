@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Currencies\Application\Query\GetCalcCurrency;
 
+use App\Currencies\Application\DTO\CursDTO;
 use App\Currencies\Domain\Repository\CurrencyRepositoryInterface;
-use App\Currencies\Infrastructure\DTO\CursDTO;
 use App\Shared\Application\Query\QueryHandlerInterface;
 
 class GetCalcCurrencyHandler implements QueryHandlerInterface

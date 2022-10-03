@@ -4,17 +4,19 @@ namespace App\Currencies\Infrastructure\Console;
 
 use App\Currencies\Application\Command\CreateCurrency\CreateCurrencyCommand;
 use App\Currencies\Application\Command\UpdateCurrency\UpdateCurrencyCommand;
+use App\Currencies\Application\DTO\CurrencyDTO;
 use App\Currencies\Application\Query\FindCurrency\FindCurrencyByVchCodeAndCreatedDateQuery;
 use App\Currencies\Infrastructure\Service\Interfaces\CurrencyParserInterface;
 use App\Shared\Application\Command\CommandBusInterface;
 use App\Shared\Application\Query\QueryBusInterface;
+use App\Shared\Infrastructure\Cache\CacheInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Cache\Adapter\MemcachedAdapter;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use App\Currencies\Application\DTO\CurrencyDTO;
 
 #[AsCommand(
     name: 'app:currencies:parse',
@@ -26,7 +28,9 @@ final class ParseCurrencies extends Command
         private readonly CurrencyParserInterface $currencyParser,
         private readonly LoggerInterface $logger,
         private readonly CommandBusInterface $commandBus,
-        private readonly QueryBusInterface $queryBus
+        private readonly QueryBusInterface $queryBus,
+        private readonly MemcachedAdapter $cachePool,
+        private readonly CacheInterface $cacheUtil
     ) {
         parent::__construct();
     }
@@ -44,6 +48,8 @@ final class ParseCurrencies extends Command
         $this->logger->debug('Start parsing data. Date: '.($date ?? 'current'));
 
         try {
+            // Clear all cache before update currencies
+            $this->cacheUtil->deleteAll($this->cachePool);
             $currencyList = $this->currencyParser->parse($date);
 
             foreach ($currencyList as $currencyItem) {

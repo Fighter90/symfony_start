@@ -34,3 +34,8 @@ services:
         arguments:
             $cachePool: '@app.cache.currencies'
         tags: [ 'controller.service_arguments' ]
+
+    App\Currencies\Infrastructure\Console\:
+        resource: '../src/Currencies/Infrastructure/Console/'
+        arguments:
+            $cachePool: '@app.cache.currencies'

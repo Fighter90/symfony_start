@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Currencies\Infrastructure\DTO;
+namespace App\Currencies\Application\DTO;
 
 class CursDTO
 {
