@@ -13,7 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class GetCalcCurrencyHandlerTest extends WebTestCase
 {
-    private const DEFAULT_VCH_CODE = 'RUR';
+    private const DEFAULT_VCH_CODE = 'RUB';
     private QueryBusInterface $queryBus;
     private AbstractDatabaseTool $databaseTool;
 

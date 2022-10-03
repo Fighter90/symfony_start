@@ -7,9 +7,14 @@ framework:
         # The data in this cache should persist between deploys.
         # Other options include:
 
-        # Redis
-        #app: cache.adapter.redis
-        #default_redis_provider: redis://localhost
+        # memcached
+        app: cache.adapter.memcached
+        default_memcached_provider: '%env(CACHE_DRIVER)%://%env(MEMCACHED_HOST)%:%env(MEMCACHED_PORT)%'
+        pools:
+            app.cache.currencies:
+                adapter: cache.adapter.memcached
+                public: false
+                default_lifetime: 120
 
         # APCu (not recommended with heavy random-write workloads as memory fragmentation can cause perf issues)
         #app: cache.adapter.apcu

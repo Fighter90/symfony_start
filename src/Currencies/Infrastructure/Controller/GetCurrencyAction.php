@@ -7,68 +7,86 @@ namespace App\Currencies\Infrastructure\Controller;
 use App\Currencies\Application\Query\GetCalcCurrency\GetCalcCurrencyQuery;
 use App\Currencies\Infrastructure\DTO\CursDTO;
 use App\Shared\Application\Query\QueryBusInterface;
+use App\Shared\Infrastructure\Cache\CacheInterface;
+use Symfony\Component\Cache\Adapter\MemcachedAdapter;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/api/currency/date/{date}/code/{code1}/{code2}', name: 'currency_calc', requirements: ['date' => "\d{4}-\d{2}-\d{2}", 'code1' => '[A-Za-z]{3}'], defaults: ['code2' => 'RUR'], methods: ['GET'])]
+#[Route('/api/currency/date/{date}/code/{code1}/{code2}', name: 'currency_calc', requirements: ['date' => "\d{4}-\d{2}-\d{2}", 'code1' => '[A-Za-z]{3}'], defaults: ['code2' => 'RUB'], methods: ['GET'])]
 class GetCurrencyAction
 {
-    public function __construct(private readonly QueryBusInterface $queryBus)
-    {
+    public function __construct(
+        private readonly QueryBusInterface $queryBus,
+        private readonly MemcachedAdapter $cachePool,
+        private readonly CacheInterface $cacheUtil
+    ) {
     }
 
     public function __invoke(string $date, string $code1, string $code2): JsonResponse
     {
-        $date1 = new \DateTime($date);
-        $query1 = new GetCalcCurrencyQuery(
+        try {
+            $date1 = new \DateTime($date);
+            $curs1 = $this->getCursArray($date1, $code1, $code2);
+            $date2 = (clone $date1)->modify('-1 day');
+            $curs2 = $this->getCursArray($date2, $code1, $code2);
+
+            $diff = null;
+
+            if (!empty($curs1) && !empty($curs2)) {
+                $diff = round(abs($curs1['vCurs'] - $curs2['vCurs']), 4);
+            }
+
+            return new JsonResponse([
+                'status' => 'success',
+                'data' => [
+                    $date1->format('Y-m-d') => $curs1,
+                    $date2->format('Y-m-d') => $curs2,
+                    'diff' => [
+                        'vNom' => $curs1['vNom'] ?? null,
+                        'vchCode1' => $curs1['vchCode1'] ?? null,
+                        'vchCode2' => $curs1['vchCode2'] ?? null,
+                        'vCurs' => $diff,
+                    ],
+                ],
+            ]);
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    private function getCursArray(\DateTime $date, string $code1, string $code2): array
+    {
+        $key = 'curs_'.$date->format('Y-m-d').'_'.$code1.'_'.$code2;
+        $data = $this->cacheUtil->getItem($this->cachePool, $key);
+
+        if (!empty($data)) {
+            return $data;
+        }
+
+        $query = new GetCalcCurrencyQuery(
             $code1,
             $code2,
-            $date1
+            $date
         );
 
         /**
          * @var CursDTO $vCurs1
          */
-        $vCurs1 = $this->queryBus->execute($query1);
+        $vCurs = $this->queryBus->execute($query);
 
-        if (!$vCurs1->getVCurs()) {
-            return new JsonResponse([
-                'status' => 'error',
-                'message' => 'Incorrect input data. No data for this params',
-            ]);
+        if (!$vCurs->getVCurs()) {
+            return [];
         }
 
-        $date2 = (clone $date1)->modify('-1 day');
-        $query2 = new GetCalcCurrencyQuery(
-            $code1,
-            $code2,
-            $date2
-        );
+        $data = $this->getDataArray($vCurs);
+        $this->cacheUtil->saveItem($this->cachePool, $key, $data);
 
-        /**
-         * @var CursDTO $vCurs2
-         */
-        $vCurs2 = $this->queryBus->execute($query2);
-
-        return new JsonResponse([
-            'status' => 'success',
-            'data' => [
-                $date1->format('Y-m-d') => $this->getDataArray($vCurs1),
-                $date2->format('Y-m-d') => $this->getDataArray($vCurs2),
-                'diff' => [
-                    'vNom' => $vCurs1->getVNom(),
-                    'vchCode1' => $vCurs1->getVchCode1(),
-                    'vchCode2' => $vCurs1->getVchCode2(),
-                    'vCurs' => round(abs($vCurs1->getVCurs() - $vCurs2->getVCurs()), 4),
-                ],
-            ],
-        ]);
+        return $data;
     }
 
-    /**
-     * @param CursDTO $vCurs
-     * @return array
-     */
     private function getDataArray(CursDTO $vCurs): array
     {
         return [

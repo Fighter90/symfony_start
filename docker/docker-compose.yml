@@ -40,5 +40,11 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data:rw
 
+  memcached:
+    image: memcached
+    container_name: memcached
+    ports:
+      - "${MEMCACHED_PORT}:11211"
+
 volumes:
   db_data:

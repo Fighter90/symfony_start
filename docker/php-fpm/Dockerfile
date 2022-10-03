@@ -17,6 +17,13 @@ RUN apk add --no-cache libpq-dev && docker-php-ext-install pdo_pgsql
 
 RUN apk add --no-cache libxml2-dev && docker-php-ext-install soap
 
+# Memcached
+RUN apk add --no-cache libmemcached-dev &&  \
+    git clone https://github.com/php-memcached-dev/php-memcached /usr/src/php/ext/memcached \
+    && cd /usr/src/php/ext/memcached \
+    && docker-php-ext-configure memcached \
+    && docker-php-ext-install memcached
+
 # Configure non-root user.
 ARG PUID=1000
 ARG PGID=1000

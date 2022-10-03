@@ -10,7 +10,7 @@ use App\Shared\Application\Query\QueryHandlerInterface;
 
 class GetCalcCurrencyHandler implements QueryHandlerInterface
 {
-    private const DEFAULT_VCH_CODE = 'RUR';
+    private const DEFAULT_VCH_CODE = 'RUB';
 
     private ?int $vNom;
 

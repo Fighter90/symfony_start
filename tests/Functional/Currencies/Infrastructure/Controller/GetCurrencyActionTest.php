@@ -50,22 +50,11 @@ class GetCurrencyActionTest extends WebTestCase
     public function test_get_currency_success_test_action(): void
     {
         // act
-        $this->client->request('GET', '/api/currency/date/'.$this->currency->getCreatedDate()->format('Y-m-d').'/code/'.$this->currency->getVchCode().'/RUR');
+        $this->client->request('GET', '/api/currency/date/'.$this->currency->getCreatedDate()->format('Y-m-d').'/code/'.$this->currency->getVchCode().'/RUB');
 
         // assert
         $data = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertEquals('success', $data['status']);
         $this->assertNotEmpty($data['data']);
-    }
-
-    public function test_get_currency_error_test_action(): void
-    {
-        // act
-        $errorDate = (clone $this->currency->getCreatedDate())->modify('+1 day');
-        $this->client->request('GET', '/api/currency/date/'.$errorDate->format('Y-m-d').'/code/'.$this->currency->getVchCode().'/RUR');
-
-        // assert
-        $data = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertEquals('error', $data['status']);
     }
 }
