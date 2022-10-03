@@ -72,7 +72,7 @@ class GetCalcCurrencyHandler implements QueryHandlerInterface
 
         $this->vNom = $currency1 && $currency2 ? 1 : null;
         $this->vCurs = $currency1 && $currency2 ?
-            round(($currency1->getVNom() / $currency1->getVCurs()) * ($currency2->getVCurs() / $currency2->getVNom()), 4)
+            round(($currency2->getVNom() / $currency2->getVCurs()) * $currency1->getVCurs(), 4)
             : null;
     }
 }
