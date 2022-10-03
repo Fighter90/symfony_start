@@ -63,11 +63,15 @@
 
 ### HOWTO
 CRON
+
 php bin/console app:currencies:parse [YYYY-mm-dd] - Запуск парсинга курсов валют в БД
+
 [YYYY-mm-dd] - дата забора данных (опционально)
 
 REST API
+
 /api/currency/date/{YYYY-mm-dd}/code/{XXX1}/{XXX2}
+
 {YYYY-mm-dd} - Дата курса валют
 {XXX1} - Курс волюты
 {XXX2} - Курс валюты (базовый)
