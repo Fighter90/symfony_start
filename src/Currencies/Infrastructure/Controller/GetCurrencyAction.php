@@ -4,11 +4,7 @@ declare(strict_types=1);
 
 namespace App\Currencies\Infrastructure\Controller;
 
-use App\Currencies\Application\DTO\CursDTO;
-use App\Currencies\Application\Query\GetCalcCurrency\GetCalcCurrencyQuery;
-use App\Shared\Application\Query\QueryBusInterface;
-use App\Shared\Infrastructure\Cache\CacheInterface;
-use Symfony\Component\Cache\Adapter\MemcachedAdapter;
+use App\Currencies\Infrastructure\Service\CurrencyService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -16,9 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class GetCurrencyAction
 {
     public function __construct(
-        private readonly QueryBusInterface $queryBus,
-        private readonly MemcachedAdapter $cachePool,
-        private readonly CacheInterface $cacheUtil
+        private readonly CurrencyService $currencyService
     ) {
     }
 
@@ -26,12 +20,12 @@ class GetCurrencyAction
     {
         try {
             $date1 = new \DateTime($date);
-            $curs1 = $this->getCursArray($date1, $code1, $code2);
+            $curs1 = $this->currencyService->getCursArray($date1, $code1, $code2);
             $date2 = (clone $date1)->modify('-1 day');
-            $curs2 = $this->getCursArray($date2, $code1, $code2);
+            $curs2 = $this->currencyService->getCursArray($date2, $code1, $code2);
 
             if (empty($curs1)) {
-                throw new \Exception('Incorrect input data. Params: '. $date1->format("Y-m-d"). ', '. $code1. ', '. $code2);
+                throw new \Exception('Incorrect input data. Params: '.$date1->format('Y-m-d').', '.$code1.', '.$code2);
             }
 
             $diff = null;
@@ -59,49 +53,5 @@ class GetCurrencyAction
                 'message' => $e->getMessage(),
             ]);
         }
-    }
-
-    private function getCursArray(\DateTime $date, string $code1, string $code2): array
-    {
-        $key = 'curs_'.$date->format('Y-m-d').'_'.$code1.'_'.$code2;
-        $data = $this->cacheUtil->getItem($this->cachePool, $key);
-
-        if (!empty($data)) {
-            return $data;
-        }
-
-        $query = new GetCalcCurrencyQuery(
-            $code1,
-            $code2,
-            $date
-        );
-
-        /**
-         * @var CursDTO $vCurs
-         */
-        $vCurs = $this->queryBus->execute($query);
-
-        if (!$vCurs->getVCurs()) {
-            return [];
-        }
-
-        $data = $this->getDataArray($vCurs);
-        $this->cacheUtil->saveItem($this->cachePool, $key, $data);
-
-        return $data;
-    }
-
-    /**
-     * @param CursDTO $vCurs
-     * @return array
-     */
-    private function getDataArray(CursDTO $vCurs): array
-    {
-        return [
-            'vchCode1' => $vCurs->getVchCode1(),
-            'vchCode2' => $vCurs->getVchCode2(),
-            'vNom' => $vCurs->getVNom(),
-            'vCurs' => $vCurs->getVCurs(),
-        ];
     }
 }

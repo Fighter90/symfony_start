@@ -12,3 +12,8 @@ services:
 
   App\Shared\Infrastructure\Bus\QueryBus:
     public: true
+
+  App\Currencies\Infrastructure\Service\CurrencyService:
+    public: true
+    arguments:
+      $cachePool: '@app.cache.currencies'

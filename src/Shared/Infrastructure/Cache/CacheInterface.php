@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Shared\Infrastructure\Cache;
 
-use Symfony\Component\Cache\Adapter\MemcachedAdapter;
+use Symfony\Component\Cache\Adapter\AdapterInterface;
 
 interface CacheInterface
 {
-    public function saveItem(MemcachedAdapter $cachePool, string $key, array $value): bool;
+    public function saveItem(AdapterInterface $cachePool, string $key, array $value): bool;
 
-    public function getItem(MemcachedAdapter $cachePool, string $key): ?array;
+    public function getItem(AdapterInterface $cachePool, string $key): ?array;
 
-    public function deleteItem(MemcachedAdapter $cachePool, string $key): bool;
+    public function deleteItem(AdapterInterface $cachePool, string $key): bool;
 
-    public function deleteAll(MemcachedAdapter $cachePool): bool;
+    public function deleteAll(AdapterInterface $cachePool): bool;
 }

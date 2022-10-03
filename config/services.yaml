@@ -31,11 +31,12 @@ services:
 
     App\Currencies\Infrastructure\Controller\:
         resource: '../src/Currencies/Infrastructure/Controller/'
-        arguments:
-            $cachePool: '@app.cache.currencies'
         tags: [ 'controller.service_arguments' ]
 
-    App\Currencies\Infrastructure\Console\:
-        resource: '../src/Currencies/Infrastructure/Console/'
+    App\Currencies\Infrastructure\Service\CurrencyService:
+        arguments:
+            $cachePool: '@app.cache.currencies'
+
+    App\Currencies\Infrastructure\Console\ParseCurrencies:
         arguments:
             $cachePool: '@app.cache.currencies'

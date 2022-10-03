@@ -6,11 +6,11 @@ namespace App\Shared\Infrastructure\Cache;
 
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\InvalidArgumentException;
-use Symfony\Component\Cache\Adapter\MemcachedAdapter;
+use Symfony\Component\Cache\Adapter\AdapterInterface;
 
 class MemcachedUtil implements CacheInterface
 {
-    public function saveItem(MemcachedAdapter $cachePool, string $key, array $value): bool
+    public function saveItem(AdapterInterface $cachePool, string $key, array $value): bool
     {
         $item = $this->fetch($cachePool, $key);
         $item->set($value);
@@ -18,7 +18,7 @@ class MemcachedUtil implements CacheInterface
         return $cachePool->save($item);
     }
 
-    public function getItem(MemcachedAdapter $cachePool, string $key): ?array
+    public function getItem(AdapterInterface $cachePool, string $key): ?array
     {
         $result = null;
 
@@ -30,17 +30,17 @@ class MemcachedUtil implements CacheInterface
         return $result;
     }
 
-    public function deleteItem(MemcachedAdapter $cachePool, string $key): bool
+    public function deleteItem(AdapterInterface $cachePool, string $key): bool
     {
         return $cachePool->deleteItem($key);
     }
 
-    public function deleteAll(MemcachedAdapter $cachePool): bool
+    public function deleteAll(AdapterInterface $cachePool): bool
     {
         return $cachePool->clear();
     }
 
-    private function fetch(MemcachedAdapter $cachePool, string $key): CacheItemInterface
+    private function fetch(AdapterInterface $cachePool, string $key): CacheItemInterface
     {
         try {
             return $cachePool->getItem($key);

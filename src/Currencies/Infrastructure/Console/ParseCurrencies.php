@@ -11,7 +11,7 @@ use App\Shared\Application\Command\CommandBusInterface;
 use App\Shared\Application\Query\QueryBusInterface;
 use App\Shared\Infrastructure\Cache\CacheInterface;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Cache\Adapter\MemcachedAdapter;
+use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -29,7 +29,7 @@ final class ParseCurrencies extends Command
         private readonly LoggerInterface $logger,
         private readonly CommandBusInterface $commandBus,
         private readonly QueryBusInterface $queryBus,
-        private readonly MemcachedAdapter $cachePool,
+        private readonly AdapterInterface $cachePool,
         private readonly CacheInterface $cacheUtil
     ) {
         parent::__construct();
